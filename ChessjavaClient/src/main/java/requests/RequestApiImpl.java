@@ -13,6 +13,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -28,6 +29,8 @@ import java.util.List;
  * Created by maxim on 16.10.18.
  */
 public class RequestApiImpl implements RequestAPI {
+
+    private Logger logger = Logger.getLogger(RequestApiImpl.class);
 
     private CloseableHttpClient client;
 
@@ -74,6 +77,8 @@ public class RequestApiImpl implements RequestAPI {
                  throw new WrongParameterException();
              else if(response.getStatusLine().getStatusCode() != 200)
                  throw new RequestException();
+
+             logger.info("mvgrass-"+login+" signed in");
         }catch (IOException exc){
             throw  new RequestException();
         }
@@ -107,6 +112,8 @@ public class RequestApiImpl implements RequestAPI {
                 throw new WrongParameterException();
             else if(response.getStatusLine().getStatusCode() != 200)
                 throw new RequestException();
+
+            logger.info("mvgrass-"+login+" signed Up");
         }catch (IOException exc){
             throw  new RequestException();
         }finally {

@@ -2,6 +2,7 @@ package requests;
 
 import Controller.MainWindowController;
 import javafx.application.Platform;
+import org.apache.log4j.Logger;
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
@@ -37,6 +38,8 @@ import java.util.*;
 public class AccountWebSocketEndpoint extends Endpoint
         implements MessageHandler.Whole<String>
 {
+
+    private Logger logger = Logger.getLogger(AccountWebSocketEndpoint.class);
 
     private Session session;
 
@@ -82,6 +85,8 @@ public class AccountWebSocketEndpoint extends Endpoint
         Platform.runLater(()->{
             controller.statusLabel.setText("Connected");
         });
+
+        logger.info("mvgrass-Connected to online Service");
     }
 
     @Override
@@ -93,11 +98,14 @@ public class AccountWebSocketEndpoint extends Endpoint
             if(closeReason.getCloseCode()!=CloseReason.CloseCodes.NORMAL_CLOSURE)
                 controller.reconnectToServer();
         });
+
+        logger.info("mvgrass-Disconnected from online Service");
     }
 
     @Override
     public void onError(Session session, Throwable thr) {
         super.onError(session, thr);
+        logger.debug("mvgrass-Socket Error", thr);
     }
 
     public void close(){
@@ -425,13 +433,17 @@ public class AccountWebSocketEndpoint extends Endpoint
                     Thread.sleep(15000);
                     if (System.currentTimeMillis() - endpoint.lastPong > 30000) {
                         endpoint = null;
-                        Platform.runLater(()->{
+                        logger.warn("mvgrass-Server is not answering ping");
+                        Platform.runLater(() -> {
                             controller.statusLabel.setText("Disconnected");
                             controller.reconnectToServer();
                         });
                         break;
-                    } else
+                    } else {
                         endpoint.session.getAsyncRemote().sendPing(ByteBuffer.wrap("Ping".getBytes()));
+                        logger.info("mvgrass-Server was pinged");
+
+                    }
                 }
             }catch (IOException exc){
                 exc.printStackTrace();

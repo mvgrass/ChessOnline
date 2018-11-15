@@ -352,22 +352,38 @@ public class GameController {
         }
 
         if(rotated && color == Color.LIGHT){
-            for(int i = move.length()-1; i>=0;i--){
-                if(move.charAt(i)>='1'&&move.charAt(i)<='8'){
-                    enemyLastMoveX = 7 - (move.charAt(i-1) - 'a');
-                    enemyLastMoveY = move.charAt(i) - '1';
-                    break;
+            if("O-O-O".equals(move)){
+                enemyLastMoveX = 5;
+                enemyLastMoveY = 0;
+            }else if("O-O".equals(move)) {
+                enemyLastMoveX = 1;
+                enemyLastMoveY = 0;
+            }else {
+                for (int i = move.length() - 1; i >= 0; i--) {
+                    if (move.charAt(i) >= '1' && move.charAt(i) <= '8') {
+                        enemyLastMoveX = 7 - (move.charAt(i - 1) - 'a');
+                        enemyLastMoveY = move.charAt(i) - '1';
+                        break;
+                    }
                 }
             }
             cells.get(8*enemyLastMoveY+enemyLastMoveX)
                     .setStyle("-fx-background-color: rgba(0, 255, 0, 0.3);");
 
         }else if(!rotated && color == Color.DARK){
-            for(int i = move.length()-1; i>=0;i--){
-                if(move.charAt(i)>='1'&&move.charAt(i)<='8'){
-                    enemyLastMoveX = move.charAt(i-1) - 'a';
-                    enemyLastMoveY = 7 - (move.charAt(i) - '1');
-                    break;
+            if("O-O-O".equals(move)){
+                enemyLastMoveX = 1;
+                enemyLastMoveY = 7;
+            }else if("O-O".equals(move)) {
+                enemyLastMoveX = 5;
+                enemyLastMoveY = 7;
+            }else {
+                for (int i = move.length() - 1; i >= 0; i--) {
+                    if (move.charAt(i) >= '1' && move.charAt(i) <= '8') {
+                        enemyLastMoveX = move.charAt(i - 1) - 'a';
+                        enemyLastMoveY = 7 - (move.charAt(i) - '1');
+                        break;
+                    }
                 }
             }
             cells.get(8*enemyLastMoveY+enemyLastMoveX)

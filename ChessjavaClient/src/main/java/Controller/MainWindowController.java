@@ -21,6 +21,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import org.apache.log4j.Logger;
 import requests.*;
 
 import javax.websocket.DeploymentException;
@@ -32,6 +33,8 @@ import java.util.*;
  * Created by maxim on 13.10.18.
  */
 public class MainWindowController implements Unresizable {
+
+    Logger logger = Logger.getLogger(MainWindowController.class);
 
     private ChatWindowController chatController = null;
 
@@ -669,7 +672,7 @@ public class MainWindowController implements Unresizable {
         public void run() {
 
             try {
-
+                logger.info("mvgrass-Trying to reconnect");
                 while (!isInterrupted()) {
                     Thread.sleep(5000);
                     try {
@@ -685,17 +688,24 @@ public class MainWindowController implements Unresizable {
                         });
 
                         Platform.runLater(() -> {
-                            try {
-                                initializeFriends();
-                            } catch (UnauthorizedException | RequestException exc) {
-                                SceneController.getInstance().activate("signInWindow");
+                            while (true) {
+                                try {
+                                    Thread.sleep(500);
+                                    initializeFriends();
+                                    break;
+                                } catch (UnauthorizedException |InterruptedException| RequestException exc) {
+                                    exc.printStackTrace();
+                                }
                             }
                         });
+
+                        logger.info("mvgrass-Reconnected");
 
                         reconnecter = null;
 
                         break;
                     } catch (IOException | URISyntaxException | RuntimeException | DeploymentException exc) {
+                        logger.warn("mvgrass-Fail to recconnect");
                         exc.printStackTrace();
                     }
                 }
